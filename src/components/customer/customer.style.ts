@@ -1,5 +1,10 @@
 import styled from "styled-components";
 
+export const StyledH1 = styled.h1`
+  margin: 0 0 1rem 0;
+  font-size: 2rem;
+`;
+
 export const StyledH2 = styled.h2`
   font-size: 1.5rem;
 `;
@@ -12,12 +17,12 @@ export const StyledTable = styled.table`
   thead th {
     border: 1px solid #dee2e6;
     vertical-align: bottom;
-    border-bottom: 2px solid #dee2e6;
-    padding: 0.75rem;
+    background-color: #f1f1f1;
+    padding: 0.5rem;
   }
   tbody td,
   tbody th {
-    padding: 0.75rem;
+    padding: 0.5rem;
     vertical-align: middle;
     border: 1px solid #dee2e6;
   }
@@ -125,4 +130,16 @@ export const StyledSpinner = styled.div`
 export const StyledError = styled.div`
   color: red;
   padding-top: 5px;
+`;
+
+export const StyledHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  label {
+    display: inline-flex;
+    align-items: center;
+    span {
+      margin-right: 5px;
+    }
+  }
 `;
