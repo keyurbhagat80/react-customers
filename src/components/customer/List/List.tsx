@@ -19,36 +19,11 @@ export interface Customers {
   dob: string;
 }
 
-export const getAllCustomers = async () => {
-  try {
-    const response = await axios.get(`http://localhost:5000/customers`);
-    return response;
-  } catch (err) {
-    return err;
-  }
-};
-
-const List: React.FC<{}> = () => {
-  const [originalCustomers, setOriginalCustomers] = useState<Customers[]>([]);
-  const [customers, setCustomers] = useState<Customers[]>([]);
-  const [getCustomerError, setGetCustomerError] = useState<boolean>(false);
+const List: React.FC<{ list: Customers[] }> = ({ list }) => {
+  const [customers, setCustomers] = useState<Customers[]>(list);
   const [searchValue, setSearchValue] = useState("");
   const [deleteSuccess, setDeleteSuccess] = useState<boolean>(false);
   const [deleteError, setDeleteError] = useState<boolean>(false);
-
-  const getCutomersList = async () => {
-    const { data } = await getAllCustomers();
-    if (data) {
-      setCustomers(data);
-      setOriginalCustomers(data);
-    } else {
-      setGetCustomerError(true);
-    }
-  };
-
-  useEffect(() => {
-    getCutomersList();
-  }, []);
 
   const deleteCustomer = (id: number) => {
     axios
@@ -81,29 +56,17 @@ const List: React.FC<{}> = () => {
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const searchText = e.target.value;
-
     setSearchValue(searchText);
   };
 
   useEffect(() => {
     if (searchValue !== "") {
-      const searchResults = executeSearch(searchValue, originalCustomers);
-
-      if (searchResults.length > 0) {
-        setCustomers(searchResults);
-      }
+      const searchResults = executeSearch(searchValue, list);
+      setCustomers(searchResults.length > 0 ? searchResults : []);
     } else {
-      setCustomers(originalCustomers);
+      setCustomers(list);
     }
-  }, [searchValue, originalCustomers]);
-
-  if (getCustomerError) {
-    return (
-      <Notification variation={"error"}>
-        Customer record not found. Please try again later.
-      </Notification>
-    );
-  }
+  }, [searchValue, list]);
 
   return (
     <div>
@@ -121,7 +84,7 @@ const List: React.FC<{}> = () => {
         </label>
       </StyledHeader>
 
-      {(customers.length === 0 || setCustomers.length === 0) && (
+      {customers.length === 0 && (
         <StyledH2>No customer found at the moment</StyledH2>
       )}
 
