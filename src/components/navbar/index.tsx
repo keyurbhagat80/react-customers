@@ -2,7 +2,7 @@ import React from "react";
 import { StyledNav, StyledUl } from "./navbar.style";
 import { Link } from "react-router-dom";
 
-const Navbar: React.FC<{}> = ({}) => {
+const Navbar: React.FC<{}> = () => {
   return (
     <StyledNav>
       <StyledUl>
