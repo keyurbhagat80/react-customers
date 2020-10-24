@@ -16,7 +16,13 @@
     "jsx": "react"
   },
   "include": ["src", "*.d.ts"],
-  "rootDir": "./src",
+  "rootDir": "src",
   "outDir": "build/dist",
-  "exclude": ["node_modules", "build", "public", "src/*.spec.ts"]
+  "exclude": [
+    "node_modules",
+    "build",
+    "public",
+    "src/*.spec.tsx",
+    "src/components/*.spec.tsx"
+  ]
 }

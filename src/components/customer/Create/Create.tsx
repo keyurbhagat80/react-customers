@@ -1,86 +1,62 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
-import { StyledH1 } from "../../App.style";
 import {
   StyledPrimaryButton,
   StyledFormGroup,
   StyledInput,
   StyledFormWrapper,
   StyledSpinner,
-  StyledError
-} from "./customer.style";
+  StyledError,
+  StyledH1
+} from "../customer.style";
 import { useFormik } from "formik";
 import { useHistory } from "react-router";
-import { useParams } from "react-router-dom";
-import Notification from "../notification";
-import { Values, validateForm } from "./customer.utils";
+import Notification from "../../notification";
+import { FormValues, validateForm } from "../customer.utils";
 
-interface props {
-  id: string;
-}
-
-const Edit: React.FC<{}> = () => {
-  const initialValues = {
-    firstName: "",
-    lastName: "",
-    dob: ""
-  };
-  const [customer, setCustomer] = useState<Values>(initialValues);
+const Create: React.FC<{}> = () => {
   const [loading, setLoading] = useState(false);
   const [submitError, setSubmitError] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const history = useHistory();
-  const { id } = useParams<props>();
 
-  useEffect(() => {
-    axios.get(`http://localhost:5000/customers/${id}`).then((data) => {
-      setCustomer(data.data);
-    });
-  }, []);
+  const handleFormSubmission = async (formData: FormValues): Promise<void> => {
+    await axios
+      .post(`http://localhost:5000/customers`, formData)
+      .then((data) => {
+        setTimeout(() => {
+          history.push("/");
+        }, 1500);
 
-  const handleFormSubmission = (formData: Values): void => {
-    setTimeout(() => {
-      axios
-        .patch(`http://localhost:5000/customers/${id}`, formData)
-        .then((data) => {
-          setTimeout(() => {
-            history.push("/");
-          }, 1500);
+        setSubmitSuccess(true);
+      })
+      .catch((error) => {
+        console.log(error);
+        setSubmitError(true);
+      });
 
-          setSubmitSuccess(true);
-        })
-        .catch((error) => {
-          console.log(error);
-          setSubmitError(true);
-        });
-    }, 500);
     setLoading(false);
   };
 
-  const {
-    handleSubmit,
-    handleChange,
-    handleBlur,
-    touched,
-    errors,
-    values
-  } = useFormik({
-    initialValues: {
-      firstName: customer.firstName,
-      lastName: customer.lastName,
-      dob: customer.dob
-    },
-    enableReinitialize: true,
-    validate: validateForm,
-    onSubmit: (value) => {
-      setLoading(true);
-      handleFormSubmission(value);
+  const { handleSubmit, handleChange, handleBlur, touched, errors } = useFormik(
+    {
+      initialValues: {
+        firstName: "",
+        lastName: "",
+        dob: ""
+      },
+      validate: validateForm,
+      onSubmit: (value) => {
+        setLoading(true);
+        handleFormSubmission(value);
+      }
     }
-  });
+  );
 
   return (
     <StyledFormWrapper>
-      <StyledH1> Update Customer </StyledH1>
+      <StyledH1>Create Customer </StyledH1>
+      {!submitSuccess && <p>Fill the form below to create a new post</p>}
 
       {submitSuccess && (
         <Notification variation={"success"}>
@@ -94,47 +70,44 @@ const Edit: React.FC<{}> = () => {
         </Notification>
       )}
 
-      <form id={"update-post-form"} onSubmit={handleSubmit}>
+      <form data-testid={"create-post-form"} onSubmit={handleSubmit}>
         <StyledFormGroup>
-          <label htmlFor="firstName"> First Name </label>
+          <label htmlFor="firstName">First Name </label>
           <StyledInput
             type="text"
-            id="firstName"
+            data-testid="firstName"
             onChange={handleChange}
             onBlur={handleBlur}
             name="firstName"
             placeholder="Enter first name"
-            value={values.firstName}
           />
           {touched.firstName && errors.firstName ? (
             <StyledError>{errors.firstName}</StyledError>
           ) : null}
         </StyledFormGroup>
         <StyledFormGroup>
-          <label htmlFor="lastName"> Last Name </label>
+          <label htmlFor="lastName">Last Name </label>
           <StyledInput
             type="text"
-            id="lastName"
+            data-testid="lastName"
             onChange={handleChange}
             onBlur={handleBlur}
             name="lastName"
             placeholder="Enter last name"
-            value={values.lastName}
           />
           {touched.lastName && errors.lastName ? (
             <StyledError>{errors.lastName}</StyledError>
           ) : null}
         </StyledFormGroup>
         <StyledFormGroup>
-          <label htmlFor="dob"> DOB </label>
+          <label htmlFor="dob">DOB </label>
           <StyledInput
             type="text"
-            id="dob"
+            data-testid="dob"
             onChange={handleChange}
             onBlur={handleBlur}
             name="dob"
             placeholder="Enter date of birth"
-            value={values.dob}
           />
           {touched.dob && errors.dob ? (
             <StyledError>{errors.dob}</StyledError>
@@ -142,9 +115,7 @@ const Edit: React.FC<{}> = () => {
         </StyledFormGroup>
 
         <div>
-          <StyledPrimaryButton type="submit">
-            Update Customer
-          </StyledPrimaryButton>
+          <StyledPrimaryButton type="submit">Add Customer</StyledPrimaryButton>
           {loading && <StyledSpinner>Loading...</StyledSpinner>}
         </div>
       </form>
@@ -152,4 +123,4 @@ const Edit: React.FC<{}> = () => {
   );
 };
 
-export default Edit;
+export default Create;
