@@ -15,6 +15,8 @@ import { useHistory } from "react-router";
 import { useParams } from "react-router-dom";
 import Notification from "../../notification";
 import { FormValues, validateForm } from "../customer.utils";
+// import { useSelector } from "react-redux";
+// import { Customers } from "../List/List";
 
 interface props {
   id: string;
@@ -32,11 +34,17 @@ const Edit: React.FC<{}> = () => {
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const history = useHistory();
   const { id } = useParams<props>();
+  // const customers = useSelector((state: any) => state.customers.customers);
 
   useEffect(() => {
     axios.get(`http://localhost:5000/customers/${id}`).then((data) => {
       setCustomer(data.data);
     });
+
+    // const initialValue = customers.filter(
+    //   (cust: Customers) => cust.id.toString() === id
+    // );
+    // setCustomer(initialValue);
   }, [id]);
 
   const handleFormSubmission = (formData: FormValues): void => {
