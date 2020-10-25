@@ -1,17 +1,21 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Switch, Route } from "react-router-dom";
+import { Switch, Route, useLocation } from "react-router-dom";
 import List, { Customers } from "./components/customer/List/List";
 import Create from "./components/customer/Create/Create";
 import EditCustomer from "./components/customer/Edit/Edit";
 
 import Notification from "./components/notification";
 import Loader from "./components/Loader";
+import { useDispatch } from "react-redux";
+import { getAllCustomersSuccess } from "./actions/customersActions";
 
 const Routes: React.FC<{}> = () => {
   const [data, setData] = useState<Customers[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
+  const dispatch = useDispatch();
+  const location = useLocation();
 
   useEffect(() => {
     const fetchCustomers = async () => {
@@ -19,14 +23,18 @@ const Routes: React.FC<{}> = () => {
         setLoading(true);
         const response = await axios(`http://localhost:5000/customers`);
         setData(response.data);
+
+        dispatch(getAllCustomersSuccess(response.data));
       } catch (err) {
         setError(true);
       }
       setLoading(false);
     };
 
-    fetchCustomers();
-  }, []);
+    if (location.pathname === "/") {
+      fetchCustomers();
+    }
+  }, [location]);
 
   if (loading) return <Loader />;
 
